@@ -88,7 +88,11 @@ public class Kmeans{
 					break;
 			}
 		}
+		double[] sum = {};
 		//for each cluster
+		for (int j : clusters) {
+
+		}
 			//for each attribute in this cluster
 				//add the value of the attribute from each instance in the cluster
 		//calculate the averages by dividing each attribute total by the count
