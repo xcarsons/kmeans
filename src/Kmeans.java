@@ -72,6 +72,22 @@ public class Kmeans{
 		double[][] centroids=new double[k][d];
 		int[] cnt=new int[k];
 		//use cnt to count the number of instances in each cluster
+		for (int i : clusters) {
+			switch (i) {
+				case 0:
+					cnt[0]++;
+					break;
+				case 1:
+					cnt[1]++;
+					break;
+				case 2:
+					cnt[2]++;
+					break;
+				case 3:
+					cnt[3]++;
+					break;
+			}
+		}
 		//for each cluster
 			//for each attribute in this cluster
 				//add the value of the attribute from each instance in the cluster
