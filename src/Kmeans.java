@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.TreeMap;
 
 public class Kmeans{
 
@@ -71,6 +72,9 @@ public class Kmeans{
 		int n=inst.length, d=inst[0].length;
 		double[][] centroids=new double[k][d];
 		int[] cnt=new int[k];
+
+		double[] attr = {};
+		TreeMap<Integer,double[]> cen = new TreeMap<Integer, double[]>();
 		//use cnt to count the number of instances in each cluster
 		for (int i : clusters) {
 			switch (i) {
@@ -87,12 +91,13 @@ public class Kmeans{
 					cnt[3]++;
 					break;
 			}
-		}
-		double[] sum = {};
-		//for each cluster
-		for (int j : clusters) {
+
+			for (int l = 0; l <d; l++) {
+
+			}
 
 		}
+
 			//for each attribute in this cluster
 				//add the value of the attribute from each instance in the cluster
 		//calculate the averages by dividing each attribute total by the count
