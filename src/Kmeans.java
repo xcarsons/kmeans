@@ -22,7 +22,10 @@ public class Kmeans{
 			//reassign the clusters using assignClusters
 			clusters = assignClusters(inst, centroids);
 			//re-calculate the centroids
+			centroids = recalcCentroids(inst, clusters, k);
 			//re-calculate the error using sse
+			errThis=sse(inst,centroids,clusters);
+			errLast=errThis+1;
 		}
 		return clusters;
 	}
@@ -75,33 +78,30 @@ public class Kmeans{
 
 		double[] attr = {};
 		TreeMap<Integer,double[]> cen = new TreeMap<Integer, double[]>();
+
+
+		int nu = 0; // which instance we're on
 		//use cnt to count the number of instances in each cluster
 		for (int i : clusters) {
-			switch (i) {
-				case 0:
-					cnt[0]++;
-					break;
-				case 1:
-					cnt[1]++;
-					break;
-				case 2:
-					cnt[2]++;
-					break;
-				case 3:
-					cnt[3]++;
-					break;
-			}
-
+			cnt[i]++;
+			//for each attribute in this cluster
+						//add the value of the attribute from each instance in the cluster
 			for (int l = 0; l <d; l++) {
-
+				centroids[i][l] += inst[nu][l];
 			}
-
+			nu++;
 		}
 
-			//for each attribute in this cluster
-				//add the value of the attribute from each instance in the cluster
+
 		//calculate the averages by dividing each attribute total by the count
 		//do this for each centroid, each attribute
+		for (int i = 0; i <4; i++) {
+			for (int j  = 0; j < d; j++) {
+				if (cnt[i]>0) {
+					centroids[i][j] = centroids[i][j]/cnt[i];
+				}
+			}
+		}
 		//be careful not to divide by zero - if a cluster is emply, skip it
 		return centroids;
 	}
@@ -110,9 +110,18 @@ public class Kmeans{
 		int n=inst.length, d=inst[0].length, k=centroids.length;
 		double sum=0;
 		//iterate through all instances
+		for (int i =0; i < n; i++) {
 			//iterate through all clusters
+			for (int j =0; j < k; j++) {
 				//if an instance is in the current cluster, add the euclidean distance
 				//between them to the sum
+				if (j == clusters[i]) {
+					sum += euclid(inst[i], centroids[j]);
+				}
+			}
+		}
+
+
 		return sum;
 	}
 
