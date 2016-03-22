@@ -9,6 +9,7 @@ public class Kmeans{
 	public static void main(String[] args){
 		Kmeans km=new Kmeans();
 		double[][] inst=km.read("proj02data.csv");
+		// normalize
 		int[] c=km.cluster(inst,4);
 		for(int i=0; i<inst.length; i++)
 			System.out.println(i+"\t"+c[i]);
@@ -24,8 +25,9 @@ public class Kmeans{
 			//re-calculate the centroids
 			centroids = recalcCentroids(inst, clusters, k);
 			//re-calculate the error using sse
+			errLast=errThis;
 			errThis=sse(inst,centroids,clusters);
-			errLast=errThis+1;
+
 		}
 		return clusters;
 	}
