@@ -1,18 +1,29 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.DoubleSummaryStatistics;
+import java.util.Scanner;
 import java.util.TreeMap;
 
 public class Kmeans{
 
 	private final double TOLERANCE=.01;
-	
+
 	public static void main(String[] args){
 		Kmeans km=new Kmeans();
 		double[][] inst=km.read("proj02data.csv");
-		// normalize
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Normalize the Data (Y/N)? (enter \'y\' for yes)");
+		if (sc.next().equalsIgnoreCase("Y")) {
+			// normalize
+			inst = km.normalize(inst);
+		}
+
+
 		int[] c=km.cluster(inst,4);
 		for(int i=0; i<inst.length; i++)
 			System.out.println(i+"\t"+c[i]);
+
+
 	} 
 
 	public int[] cluster(double[][] inst, int k){
@@ -29,6 +40,7 @@ public class Kmeans{
 			errThis=sse(inst,centroids,clusters);
 
 		}
+		clusterInfo(centroids); // Describe Cluster
 		return clusters;
 	}
 
@@ -122,8 +134,6 @@ public class Kmeans{
 				}
 			}
 		}
-
-
 		return sum;
 	}
 
@@ -143,6 +153,75 @@ public class Kmeans{
 				System.out.print(mat[i][j]+"\t");
 			System.out.println();
 		}
+	}
+
+	// Normalizes the data
+	private double[][] normalize(double[][] inst) {
+		double[] max = new double[inst[0].length];
+		double[] min = new double[inst[0].length];
+		// set the initial max and min of each attribute
+		for (int i = 0; i < inst[0].length; i++) {
+			max[i] = inst[0][i];
+			min[i] = inst[0][i];
+		}
+		// loop through all instances of data
+		for (double[] i : inst) {
+			// compare each attribute of each instance of data
+			for (int j =0; j < i.length; j++) {
+				if (max[j] < i[j]) { // set the new max for the attribute
+					max[j] = i[j];
+				}
+				if (min[j] > i[j]) { // set the new min for the attribute
+					min[j] = i[j];
+				}
+			}
+		}
+		// loop through all instances of data
+		for (double[] i : inst) {
+			// loop through each attribute of an instance and normalize it
+			for (int j =0; j<inst[0].length; j++) {
+				i[j] = (i[j] - min[j])/(max[j]-min[j]); // normalize calculation
+			}
+		}
+		return inst;
+	}
+
+	// Describes the clusters
+	private void clusterInfo(double[][] centroids) {
+		System.out.println("\n-----------Cluster Info-------------");
+		for (int i = 0; i < centroids.length; i++) {
+			System.out.println("Centroid: "+ i);
+			for (int j = 0; j < centroids[0].length; j++) {
+				System.out.println("\tComponent: "+ j + " = " + centroids[i][j]);
+
+			}
+		}
+		int[] largest = new int[centroids[0].length];
+		int[] smallest = new int[centroids[0].length];
+		for (int i=0; i < centroids[0].length; i++) {
+			double high = centroids[0][i];
+			double low = centroids[0][i];
+			for (int j =0; j < centroids.length; j++) {
+				if (high < centroids[j][i]) {
+					high = centroids[j][i];
+					largest[i] = j;
+				}
+				if (low > centroids[j][i]) {
+					low = centroids[j][i];
+					smallest[i] = j;
+				}
+			}
+		}
+		System.out.print("\n-------------------Cluster Description--------------------\n");
+		for (int i =0; i < largest.length; i++) {
+			System.out.println("Component: "+i);
+			System.out.println("\tCentroid: "+largest[i] + " has the largest value");
+			System.out.println("\tCentroid: "+smallest[i] + " has the smallest value");
+			System.out.println("\tThis means that Cluster: " + largest[i]+ " has relatively high values for component "+i);
+			System.out.println("\tThis means that Cluster: " + smallest[i]+ " has relatively low values for component "+i);
+		}
+
+
 	}
 
 	//reads in the file - no modifications necessary
