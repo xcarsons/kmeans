@@ -1,12 +1,23 @@
+import apple.laf.JRSUIUtils;
+
 import java.io.*;
 import java.util.ArrayList;
-import java.util.DoubleSummaryStatistics;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
+
+/**
+ * CARSON SCHAEFER
+ * PROJECT 2
+ * CIS 335 (DATA MINING)
+ * PROFESSOR SCRIPPS
+ */
 
 public class Kmeans{
 
 	private final double TOLERANCE=.01;
+	// int for cluster, array 0 -> inst (possible outlier) 1-> distance 	is used in the assign cluster method
+	private static TreeMap<Integer,Double[]> outlierMap = new TreeMap<>(); // possible outlier for each cluster
 
 	public static void main(String[] args){
 		Kmeans km=new Kmeans();
@@ -23,7 +34,11 @@ public class Kmeans{
 		for(int i=0; i<inst.length; i++)
 			System.out.println(i+"\t"+c[i]);
 
-
+		System.out.println("\n--------------Possible outliers----------------\n");
+		for (Map.Entry<Integer,Double[]> entry : outlierMap.entrySet()) {
+			System.out.println("Inst: "+entry.getValue()[0]+" may be an outlier for Cluster: "+entry.getKey());
+			System.out.println("\tDistance is: " + entry.getValue()[1]);
+		}
 	} 
 
 	public int[] cluster(double[][] inst, int k){
@@ -40,7 +55,7 @@ public class Kmeans{
 			errThis=sse(inst,centroids,clusters);
 
 		}
-		clusterInfo(centroids); // Describe Cluster
+		clusterInfo(centroids); // Describe Clusters
 		return clusters;
 	}
 
@@ -64,6 +79,12 @@ public class Kmeans{
 
 	public int[] assignClusters(double[][] inst, double[][] centroids){
 		int n=inst.length, d=inst[0].length, k=centroids.length;
+
+		Double[] blank = {0.0,0.0};
+		// set outlierMap to 0s
+		for (int i = 0; i < k; i++) {
+			outlierMap.put(i,blank);
+		}
 		int[] rtn=new int[n];
 		double min = 0;
 		int cent = 0;
@@ -78,6 +99,10 @@ public class Kmeans{
 					min = euclid(inst[l], centroids[j]);
 					cent = j;
 				}
+			}
+			if (outlierMap.get(cent)[1] < euclid(inst[l], centroids[cent])) { // new inst max dist for cluster
+				Double[] temp = {(double) l,euclid(inst[l], centroids[cent])}; // possible outlier inst and dist
+				outlierMap.put(cent,temp); // store new possible outlier in map
 			}
 			rtn[l] = cent;
 		}
